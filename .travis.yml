@@ -2,6 +2,7 @@ language: node_js
 node_js:
   - "11"
 script:
+  - yarn global add codecov
   - yarn test
   - yarn coverage > coverage.lcov
   - codecov
