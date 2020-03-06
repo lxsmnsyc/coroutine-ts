@@ -14,6 +14,8 @@ npm install --save coroutine-ts
 yarn add coroutine-ts
 ```
 
+## Usage
+
 ## License
 
 MIT © [lxsmnsyc](https://github.com/lxsmnsyc)
