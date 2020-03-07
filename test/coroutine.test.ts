@@ -21,7 +21,7 @@ describe('Coroutine', () => {
   describe('#start', () => {
     it('should throw an error when started multiple times.', async () => {
       const example = new Coroutine(async () => {
-        await example.yield();
+        await Coroutine.yield();
       });
 
       example.start();
@@ -36,7 +36,7 @@ describe('Coroutine', () => {
     });
     it('should throw an error when started after running.', async () => {
       const example = new Coroutine(async () => {
-        await example.yield();
+        await Coroutine.yield();
       });
 
       await example.start();
@@ -52,7 +52,7 @@ describe('Coroutine', () => {
     });
     it('should throw an error when started after finishing.', async () => {
       const example = new Coroutine(async () => {
-        await example.yield();
+        await Coroutine.yield();
       });
 
       await example.start();
@@ -100,7 +100,7 @@ describe('Coroutine', () => {
   describe('#resume', () => {
     it('should throw an error when resumed before starting.', async () => {
       const example = new Coroutine(async () => {
-        await example.yield();
+        await Coroutine.yield();
       });
 
       try {
@@ -113,7 +113,7 @@ describe('Coroutine', () => {
     });
     it('should throw an error when resumed multiple times.', async () => {
       const example = new Coroutine(async () => {
-        await example.yield();
+        await Coroutine.yield();
       });
 
       await example.start();
@@ -129,7 +129,7 @@ describe('Coroutine', () => {
     });
     it('should throw an error when started after finishing.', async () => {
       const example = new Coroutine(async () => {
-        await example.yield();
+        await Coroutine.yield();
       });
 
       await example.start();
@@ -145,7 +145,7 @@ describe('Coroutine', () => {
     });
     it('should throw an error when function throws an error.', async () => {
       const example = new Coroutine(async () => {
-        await example.yield();
+        await Coroutine.yield();
         throw new Error();
       });
 
@@ -166,7 +166,7 @@ describe('Coroutine', () => {
   describe('#yield', () => {
     it('should throw an error when yielded before starting.', async () => {
       const example = new Coroutine(async () => {
-        await example.yield();
+        await Coroutine.yield();
       });
 
       try {
@@ -179,7 +179,7 @@ describe('Coroutine', () => {
     });
     it('should throw an error when yielded multiple times.', async () => {
       const example = new Coroutine(async () => {
-        await example.yield();
+        await Coroutine.yield();
       });
 
       await example.start();
@@ -194,7 +194,7 @@ describe('Coroutine', () => {
     });
     it('should throw an error when yielded after finishing.', async () => {
       const example = new Coroutine(async () => {
-        await example.yield();
+        await Coroutine.yield();
       });
 
       await example.start();
@@ -227,7 +227,7 @@ describe('Coroutine', () => {
     });
     it("should return 'suspended' for a yielded Coroutine", async () => {
       const example = new Coroutine(async () => {
-        await example.yield();
+        await Coroutine.yield();
       });
 
       await example.start();
@@ -236,7 +236,7 @@ describe('Coroutine', () => {
     });
     it("should return 'running' for a resumed Coroutine", async () => {
       const example = new Coroutine(async () => {
-        await example.yield();
+        await Coroutine.yield();
       });
 
       await example.start();
@@ -246,7 +246,7 @@ describe('Coroutine', () => {
     });
     it("should return 'dead' for a finished Coroutine", async () => {
       const example = new Coroutine(async () => {
-        await example.yield();
+        await Coroutine.yield();
       });
 
       await example.start();
