@@ -25,7 +25,7 @@
  * @author Alexis Munsayac <alexis.munsayac@gmail.com>
  * @copyright Alexis Munsayac 2020
  */
-import { CoroutineStatus, CoroutineResumeResult } from './types';
+import { CoroutineStatus, CoroutineResult } from './types';
 import Deferred from './deferred';
 import CoroutineDeadStartError from './error/dead-start';
 import CoroutineMultiStartError from './error/multi-start';
@@ -35,17 +35,21 @@ import CoroutineMultiResumeError from './error/multi-resume';
 import CoroutineDeadYieldError from './error/dead-yield';
 import CoroutineUncalledYieldError from './error/uncalled-yield';
 import CoroutineMultiYieldError from './error/multi-yield';
+import CoroutineNoRunningError from './error/no-running';
+import Context from './context';
+
+const STACK = new Context<Coroutine<any, any, any>>();
 
 export default class Coroutine<
-  Yield,
+  Result,
   Args extends any[],
-  Callback extends ((...args: Args) => Promise<Yield>),
+  Callback extends ((...args: Args) => Promise<Result>),
 > {
   private callback: Callback;
 
   private cstatus: CoroutineStatus;
 
-  private running?: Deferred<CoroutineResumeResult<Yield>>;
+  private running?: Deferred<CoroutineResult<any>>;
 
   private halting?: Deferred<any>;
 
@@ -54,7 +58,10 @@ export default class Coroutine<
     this.cstatus = 'uncalled';
   }
 
-  public async start(...args: Args): Promise<CoroutineResumeResult<Yield>> {
+  public async start<R>(...args: Args): Promise<CoroutineResult<R>> {
+    /**
+     * State switch guard
+     */
     switch (this.cstatus) {
       case 'dead': throw new CoroutineDeadStartError();
       case 'suspended': throw new CoroutineMultiStartError();
@@ -63,9 +70,19 @@ export default class Coroutine<
       default: break;
     }
 
+    /**
+     * Set new state
+     */
     this.cstatus = 'running';
 
-    this.running = new Deferred<CoroutineResumeResult<Yield>>();
+    /**
+     * Push coroutine as current running coroutine
+     */
+    if (Coroutine.current !== this) {
+      STACK.push(this);
+    }
+
+    this.running = new Deferred<CoroutineResult<R>>();
 
     try {
       this.callback.call(this, ...args).then(
@@ -77,22 +94,26 @@ export default class Coroutine<
             });
           }
           this.cstatus = 'dead';
+          STACK.pop();
         },
         (value) => {
           if (this.running) {
             this.running.failure(value);
           }
           this.cstatus = 'dead';
+          STACK.pop();
         },
       );
     } catch (err) {
       this.running.failure(err);
+      this.cstatus = 'dead';
+      STACK.pop();
     }
 
     return this.running;
   }
 
-  public async resume<T extends any[]>(...args: T): Promise<CoroutineResumeResult<Yield>> {
+  public async resume<T extends any[], R>(...args: T): Promise<CoroutineResult<R>> {
     switch (this.cstatus) {
       case 'dead': throw new CoroutineDeadResumeError();
       case 'uncalled': throw new CoroutineUncalledResumeError();
@@ -103,16 +124,20 @@ export default class Coroutine<
 
     this.cstatus = 'running';
 
+    if (Coroutine.current !== this) {
+      STACK.push(this);
+    }
+
     if (this.halting) {
       this.halting.success(args);
     }
 
-    this.running = new Deferred<CoroutineResumeResult<Yield>>();
+    this.running = new Deferred<CoroutineResult<R>>();
 
     return this.running;
   }
 
-  public async yield<R extends any[]>(value?: Yield): Promise<R> {
+  public async yield<T extends any[], R extends any[]>(...value: T): Promise<R> {
     switch (this.cstatus) {
       case 'dead': throw new CoroutineDeadYieldError();
       case 'uncalled': throw new CoroutineUncalledYieldError();
@@ -122,6 +147,7 @@ export default class Coroutine<
     }
 
     this.cstatus = 'suspended';
+    STACK.pop();
 
     if (this.running) {
       this.running.success({
@@ -139,6 +165,24 @@ export default class Coroutine<
     this.cstatus = 'uncalled';
     this.running = undefined;
     this.halting = undefined;
+  }
+
+  public static yield<T extends any[], R extends any[]>(...value: T): Promise<R> {
+    const current = STACK.peek();
+
+    if (!current) {
+      throw new CoroutineNoRunningError();
+    }
+    return current.value.yield(...value);
+  }
+
+  public static get current(): Coroutine<any, any, any> | undefined {
+    const current = STACK.peek();
+
+    if (!current) {
+      return undefined;
+    }
+    return current.value;
   }
 
   public get status(): CoroutineStatus {
