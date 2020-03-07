@@ -31,7 +31,7 @@ export type CoroutineStatus =
   | 'running'
   | 'dead';
 
-export interface CoroutineResumeResult<T> {
+export interface CoroutineResult<T> {
   done: boolean;
   value?: T;
 }
