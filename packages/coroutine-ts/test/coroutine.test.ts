@@ -1,17 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import {
   Coroutine,
-  CoroutineMultiStartError,
-  CoroutineDeadStartError,
-  CoroutineMultiResumeError,
-  CoroutineUncalledResumeError,
   CoroutineDeadResumeError,
-  CoroutineUncalledYieldError,
-  CoroutineMultiYieldError,
+  CoroutineDeadStartError,
   CoroutineDeadYieldError,
+  CoroutineMultiResumeError,
+  CoroutineMultiStartError,
+  CoroutineMultiYieldError,
+  CoroutineUncalledResumeError,
+  CoroutineUncalledYieldError,
 } from '../src';
 
-function defer(): Promise<void> {
+async function defer(): Promise<void> {
   return Promise.resolve();
 }
 
@@ -30,7 +30,8 @@ describe('Coroutine', () => {
       try {
         await example.start();
       } catch (err) {
-        return expect(err).toBeInstanceOf(CoroutineMultiStartError);
+        expect(err).toBeInstanceOf(CoroutineMultiStartError);
+        return;
       }
 
       return null;
@@ -46,7 +47,8 @@ describe('Coroutine', () => {
       try {
         await example.start();
       } catch (err) {
-        return expect(err).toBeInstanceOf(CoroutineMultiStartError);
+        expect(err).toBeInstanceOf(CoroutineMultiStartError);
+        return;
       }
 
       return null;
@@ -62,7 +64,8 @@ describe('Coroutine', () => {
       try {
         await example.start();
       } catch (err) {
-        return expect(err).toBeInstanceOf(CoroutineDeadStartError);
+        expect(err).toBeInstanceOf(CoroutineDeadStartError);
+        return;
       }
 
       return null;
@@ -75,7 +78,8 @@ describe('Coroutine', () => {
       try {
         await example.start();
       } catch (err) {
-        return expect(err).toBeInstanceOf(Error);
+        expect(err).toBeInstanceOf(Error);
+        return;
       }
       expect.fail('should throw an Error');
       return null;
@@ -89,7 +93,8 @@ describe('Coroutine', () => {
       try {
         await example.start();
       } catch (err) {
-        return expect(err).toBeInstanceOf(Error);
+        expect(err).toBeInstanceOf(Error);
+        return;
       }
       expect.fail('should throw an Error');
       return null;
@@ -107,7 +112,8 @@ describe('Coroutine', () => {
       try {
         await example.resume();
       } catch (err) {
-        return expect(err).toBeInstanceOf(CoroutineUncalledResumeError);
+        expect(err).toBeInstanceOf(CoroutineUncalledResumeError);
+        return;
       }
 
       return null;
@@ -123,7 +129,8 @@ describe('Coroutine', () => {
       try {
         await example.resume();
       } catch (err) {
-        return expect(err).toBeInstanceOf(CoroutineMultiResumeError);
+        expect(err).toBeInstanceOf(CoroutineMultiResumeError);
+        return;
       }
 
       return null;
@@ -139,7 +146,8 @@ describe('Coroutine', () => {
       try {
         await example.resume();
       } catch (err) {
-        return expect(err).toBeInstanceOf(CoroutineDeadResumeError);
+        expect(err).toBeInstanceOf(CoroutineDeadResumeError);
+        return;
       }
 
       return null;
@@ -155,7 +163,8 @@ describe('Coroutine', () => {
       try {
         await example.resume();
       } catch (err) {
-        return expect(err).toBeInstanceOf(Error);
+        expect(err).toBeInstanceOf(Error);
+        return;
       }
       expect.fail('should throw an Error');
       return null;
@@ -173,7 +182,8 @@ describe('Coroutine', () => {
       try {
         await example.yield();
       } catch (err) {
-        return expect(err).toBeInstanceOf(CoroutineUncalledYieldError);
+        expect(err).toBeInstanceOf(CoroutineUncalledYieldError);
+        return;
       }
 
       return null;
@@ -188,7 +198,8 @@ describe('Coroutine', () => {
       try {
         await example.yield();
       } catch (err) {
-        return expect(err).toBeInstanceOf(CoroutineMultiYieldError);
+        expect(err).toBeInstanceOf(CoroutineMultiYieldError);
+        return;
       }
 
       return null;
@@ -204,7 +215,8 @@ describe('Coroutine', () => {
       try {
         await example.yield();
       } catch (err) {
-        return expect(err).toBeInstanceOf(CoroutineDeadYieldError);
+        expect(err).toBeInstanceOf(CoroutineDeadYieldError);
+        return;
       }
 
       return null;
@@ -215,16 +227,16 @@ describe('Coroutine', () => {
    */
   describe('#status', () => {
     it("should return 'uncalled' for a newly created Coroutine", () => {
-      const example = new Coroutine(() => Promise.resolve(null));
+      const example = new Coroutine(async () => Promise.resolve(null));
 
-      return expect(example.status).toEqual('uncalled');
+      expect(example.status).toEqual('uncalled');
     });
     it("should return 'running' for a started Coroutine", () => {
-      const example = new Coroutine(() => Promise.resolve(null));
+      const example = new Coroutine(async () => Promise.resolve(null));
 
       example.start();
 
-      return expect(example.status).toEqual('running');
+      expect(example.status).toEqual('running');
     });
     it("should return 'suspended' for a yielded Coroutine", async () => {
       const example = new Coroutine(async () => {
@@ -233,7 +245,7 @@ describe('Coroutine', () => {
 
       await example.start();
 
-      return expect(example.status).toEqual('suspended');
+      expect(example.status).toEqual('suspended');
     });
     it("should return 'running' for a resumed Coroutine", async () => {
       const example = new Coroutine(async () => {
@@ -243,7 +255,7 @@ describe('Coroutine', () => {
       await example.start();
       example.resume();
 
-      return expect(example.status).toEqual('running');
+      expect(example.status).toEqual('running');
     });
     it("should return 'dead' for a finished Coroutine", async () => {
       const example = new Coroutine(async () => {
@@ -253,7 +265,7 @@ describe('Coroutine', () => {
       await example.start();
       await example.resume();
 
-      return expect(example.status).toEqual('dead');
+      expect(example.status).toEqual('dead');
     });
   });
 });

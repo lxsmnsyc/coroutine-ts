@@ -25,11 +25,7 @@
  * @author Alexis Munsayac <alexis.munsayac@gmail.com>
  * @copyright Alexis Munsayac 2020
  */
-export type CoroutineStatus =
-  | 'uncalled'
-  | 'suspended'
-  | 'running'
-  | 'dead';
+export type CoroutineStatus = 'uncalled' | 'suspended' | 'running' | 'dead';
 
 export interface CoroutineResult<T> {
   done: boolean;

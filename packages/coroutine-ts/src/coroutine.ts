@@ -25,7 +25,7 @@
  * @author Alexis Munsayac <alexis.munsayac@gmail.com>
  * @copyright Alexis Munsayac 2020
  */
-import type { CoroutineStatus, CoroutineResult } from './types';
+import type { CoroutineResult, CoroutineStatus } from './types';
 import Deferred from './deferred';
 import CoroutineDeadStartError from './error/dead-start';
 import CoroutineMultiStartError from './error/multi-start';
@@ -43,9 +43,9 @@ const STACK = new Context<Coroutine<any, any, any>>();
 export default class Coroutine<
   Result,
   Args extends any[],
-  Callback extends ((...args: Args) => Promise<Result>),
+  Callback extends (...args: Args) => Promise<Result>,
 > {
-  private callback: Callback;
+  private readonly callback: Callback;
 
   private cstatus: CoroutineStatus;
 
@@ -63,11 +63,15 @@ export default class Coroutine<
      * State switch guard
      */
     switch (this.cstatus) {
-      case 'dead': throw new CoroutineDeadStartError();
-      case 'suspended': throw new CoroutineMultiStartError();
-      case 'running': throw new CoroutineMultiStartError();
+      case 'dead':
+        throw new CoroutineDeadStartError();
+      case 'suspended':
+        throw new CoroutineMultiStartError();
+      case 'running':
+        throw new CoroutineMultiStartError();
       case 'uncalled':
-      default: break;
+      default:
+        break;
     }
 
     /**
@@ -115,11 +119,15 @@ export default class Coroutine<
 
   public async resume<T extends any[], R>(...args: T): Promise<CoroutineResult<R>> {
     switch (this.cstatus) {
-      case 'dead': throw new CoroutineDeadResumeError();
-      case 'uncalled': throw new CoroutineUncalledResumeError();
-      case 'running': throw new CoroutineMultiResumeError();
+      case 'dead':
+        throw new CoroutineDeadResumeError();
+      case 'uncalled':
+        throw new CoroutineUncalledResumeError();
+      case 'running':
+        throw new CoroutineMultiResumeError();
       case 'suspended':
-      default: break;
+      default:
+        break;
     }
 
     this.cstatus = 'running';
@@ -139,11 +147,15 @@ export default class Coroutine<
 
   public async yield<T extends any[], R extends any[]>(...value: T): Promise<R> {
     switch (this.cstatus) {
-      case 'dead': throw new CoroutineDeadYieldError();
-      case 'uncalled': throw new CoroutineUncalledYieldError();
-      case 'suspended': throw new CoroutineMultiYieldError();
+      case 'dead':
+        throw new CoroutineDeadYieldError();
+      case 'uncalled':
+        throw new CoroutineUncalledYieldError();
+      case 'suspended':
+        throw new CoroutineMultiYieldError();
       case 'running':
-      default: break;
+      default:
+        break;
     }
 
     this.cstatus = 'suspended';
@@ -167,6 +179,8 @@ export default class Coroutine<
     this.halting = undefined;
   }
 
+  // Throws CoroutineNoRunningError synchronously, so it stays a plain function.
+  // oxlint-disable-next-line typescript/promise-function-async
   public static yield<T extends any[], R extends any[]>(...value: T): Promise<R> {
     const current = STACK.peek();
 

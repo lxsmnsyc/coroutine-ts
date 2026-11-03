@@ -18,7 +18,7 @@ yarn add coroutine-ts
 
 From [Coroutines Tutorial](http://lua-users.org/wiki/CoroutinesTutorial):
 
-> Coroutines allow us to execute several tasks at once. This is done in a controlled manner by passing control to each routine and waiting until the routine says it has finished. We can reenter the routine to continue at a later time and by doing this repeatedly we achieve multi-tasking. 
+> Coroutines allow us to execute several tasks at once. This is done in a controlled manner by passing control to each routine and waiting until the routine says it has finished. We can reenter the routine to continue at a later time and by doing this repeatedly we achieve multi-tasking.
 
 ### Yielding
 
@@ -26,7 +26,7 @@ In order for multiple coroutines to share execution they must stop executing (af
 
 ### Simple Usage
 
-To create a coroutine we must have an async function which represents it, e.g., 
+To create a coroutine we must have an async function which represents it, e.g.,
 
 ```javascript
 async function foo() {
@@ -43,15 +43,17 @@ const co = new Coroutine(foo);
 ```
 
 We can find out what state the thread is in using the `Coroutine.status` getter:
+
 ```javascript
 console.log(co.status); // 'uncalled'
 ```
 
 There are 4 kinds of states:
-* `uncalled` - The coroutine hasn't been called yet.
-* `suspended` - The coroutine has been called, running and was suspended through yielding.
-* `running` - The coroutine was resumed from being suspended.
-* `dead` - The coroutine has finished the evaluation and can no longer be resumed nor yielded.
+
+- `uncalled` - The coroutine hasn't been called yet.
+- `suspended` - The coroutine has been called, running and was suspended through yielding.
+- `running` - The coroutine was resumed from being suspended.
+- `dead` - The coroutine has finished the evaluation and can no longer be resumed nor yielded.
 
 To start a coroutine, we use the method `.start`, which may accept the parameters to be passed to our async function. This method returns a Promise which resolves to a `CoroutineResult`, which has a property `done` that represents if the coroutine has finished evaluation, and the property `value` which is the yielded value or the returne value from the function. This state changes from `uncalled` to `running`, after which it becomes `suspended` if the coroutine yields or `dead` if the function ends.
 
@@ -83,8 +85,8 @@ console.log('Sent: ', result2.value); // Sent: undefined
 
 ### Difference to Lua coroutines
 
-* Lua coroutine methods are accessible as table fields, not as instance methods.
-* Lua coroutine methods can know about the current running coroutine instance, so you can always call the `yield` function even without passing the coroutine instance.
+- Lua coroutine methods are accessible as table fields, not as instance methods.
+- Lua coroutine methods can know about the current running coroutine instance, so you can always call the `yield` function even without passing the coroutine instance.
 
 ## License
 

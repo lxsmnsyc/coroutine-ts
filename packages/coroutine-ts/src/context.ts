@@ -30,7 +30,7 @@ export interface Value<T> {
 }
 
 export default class Context<T> {
-  private stack: Value<T>[] = [];
+  private readonly stack: Value<T>[] = [];
 
   public push(value: T): void {
     this.stack.push({

@@ -27,6 +27,6 @@
  */
 export default class CoroutineUncalledYieldError extends Error {
   constructor() {
-    super('Attempted to yield from a coroutine that hasn\'t been started.');
+    super("Attempted to yield from a coroutine that hasn't been started.");
   }
 }

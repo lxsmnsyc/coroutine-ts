@@ -22,37 +22,36 @@ class Scheduler {
       }
       const state = thread.state;
       let ret;
-      
+
       switch (state) {
         case 'wait':
           if (getCurrent() >= thread.resumeTime) {
             thread.resumeTime = null;
-            thread.state = "running";
+            thread.state = 'running';
             this.threads[i] = null;
-            ret = await thread.co.resume(getCurrent() - thread.suspendTime, ...thread.arg),
-            thread.suspendTime = null;
+            ((ret = await thread.co.resume(getCurrent() - thread.suspendTime, ...thread.arg)),
+              (thread.suspendTime = null));
             thread.arg = null;
-          } else if ((!shortest) || thread.resumeTime < shortest) {
+          } else if (!shortest || thread.resumeTime < shortest) {
             shortest = thread.resumeTime;
           }
           break;
         case 'suspend':
-          thread.state = "running";
+          thread.state = 'running';
           this.threads[i] = null;
-          ret = await thread.co.resume(...thread.arg),
-          thread.arg = null;
+          ((ret = await thread.co.resume(...thread.arg)), (thread.arg = null));
           break;
         case 'new':
-          thread.state = "running";
+          thread.state = 'running';
           this.threads[i] = null;
-          ret = await thread.co.start(...thread.arg)
+          ret = await thread.co.start(...thread.arg);
           thread.arg = null;
           break;
         default:
           break;
       }
 
-      if (ret && ret.value) {
+      if (ret?.value) {
         const [act, ...rest] = ret.value;
 
         if (ret.done) {
@@ -60,18 +59,18 @@ class Scheduler {
         }
         const status = thread.co.status;
 
-        if (status === "dead") {
-          thread.state = "dead";
-        } else if (act === "suspend") {
+        if (status === 'dead') {
+          thread.state = 'dead';
+        } else if (act === 'suspend') {
           thread.arg = rest;
-          thread.state = "suspend";
+          thread.state = 'suspend';
           this.threads.push(thread);
-        } else if (act === "wait") {
+        } else if (act === 'wait') {
           const [wait, ...remain] = rest;
           thread.arg = remain;
           thread.suspendTime = getCurrent();
           thread.resumeTime = getCurrent() + wait;
-          thread.state = "wait";
+          thread.state = 'wait';
           this.threads.unshift(thread);
         }
         return [true, 0];
@@ -81,12 +80,12 @@ class Scheduler {
     if (shortest) {
       return [true, shortest];
     }
-    return [false, "no threads"];
+    return [false, 'no threads'];
   }
 
   spawn(fn, ...args) {
     this.threads.push({
-      state: "new",
+      state: 'new',
       co: new Coroutine(fn),
       arg: args,
     });
@@ -94,36 +93,36 @@ class Scheduler {
 
   async run(fn, ...args) {
     this.threads.unshift({
-      state: "new",
+      state: 'new',
       co: new Coroutine(fn),
       arg: args,
     });
-    await Coroutine.yield("suspend");
+    await Coroutine.yield('suspend');
   }
 
   async suspend(...args) {
-    return await Coroutine.yield("suspend", ...args);
+    return await Coroutine.yield('suspend', ...args);
   }
 
   async wait(time, ...args) {
-    return await Coroutine.yield("wait", time, ...args);
+    return await Coroutine.yield('wait', time, ...args);
   }
 }
 
-const sleep = (time) => new Promise((res) => setTimeout(res, time, true));
+const sleep = async (time) => new Promise((res) => setTimeout(res, time, true));
 
 (async () => {
   const scheduler = new Scheduler();
 
   for (let i = 0; i < 10; i++) {
-    scheduler.spawn(async function () {
-      console.log("outer started", i, getCurrent());
+    scheduler.spawn(async () => {
+      console.log('outer started', i, getCurrent());
       scheduler.spawn(async function () {
-        console.log("inner started", i, getCurrent());
+        console.log('inner started', i, getCurrent());
         await scheduler.wait(i * 500);
-        console.log("inner finished", i, getCurrent());
+        console.log('inner finished', i, getCurrent());
       });
-      console.log("outer finished", i, getCurrent());
+      console.log('outer finished', i, getCurrent());
     });
   }
 
@@ -132,7 +131,7 @@ const sleep = (time) => new Promise((res) => setTimeout(res, time, true));
 
     if (worked) {
       if (t != null) {
-        console.log("sleeping", t);
+        console.log('sleeping', t);
         await sleep(t);
       }
     } else {

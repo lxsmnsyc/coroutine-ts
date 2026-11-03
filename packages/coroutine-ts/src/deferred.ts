@@ -26,7 +26,7 @@
  * @copyright Alexis Munsayac 2020
  */
 export default class Deferred<T> implements PromiseLike<T> {
-  private promise: Promise<T>;
+  private readonly promise: Promise<T>;
 
   private res?: (value: T | PromiseLike<T>) => void;
 
@@ -51,9 +51,10 @@ export default class Deferred<T> implements PromiseLike<T> {
     }
   }
 
+  // oxlint-disable-next-line typescript/promise-function-async
   public then<T1 = T, T2 = never>(
-    onfulfilled?: ((value: T) => T1 | PromiseLike<T1>) | undefined | null,
-    onrejected?: ((reason: any) => T2 | PromiseLike<T2>) | undefined | null,
+    onfulfilled?: ((value: T) => T1 | PromiseLike<T1>) | null,
+    onrejected?: ((reason: any) => T2 | PromiseLike<T2>) | null,
   ): Promise<T1 | T2> {
     return this.promise.then(onfulfilled, onrejected);
   }

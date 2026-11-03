@@ -27,6 +27,6 @@
  */
 export default class CoroutineUncalledResumeError extends Error {
   constructor() {
-    super('Attempted to resume a coroutine that hasn\'t been started.');
+    super("Attempted to resume a coroutine that hasn't been started.");
   }
 }
