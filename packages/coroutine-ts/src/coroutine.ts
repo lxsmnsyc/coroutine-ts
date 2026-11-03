@@ -25,7 +25,7 @@
  * @author Alexis Munsayac <alexis.munsayac@gmail.com>
  * @copyright Alexis Munsayac 2020
  */
-import { CoroutineStatus, CoroutineResult } from './types';
+import type { CoroutineStatus, CoroutineResult } from './types';
 import Deferred from './deferred';
 import CoroutineDeadStartError from './error/dead-start';
 import CoroutineMultiStartError from './error/multi-start';

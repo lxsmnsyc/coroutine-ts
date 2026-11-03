@@ -28,7 +28,7 @@
 export default class Deferred<T> implements PromiseLike<T> {
   private promise: Promise<T>;
 
-  private res?: (value?: T) => void;
+  private res?: (value: T | PromiseLike<T>) => void;
 
   private rej?: (reason?: any) => void;
 
@@ -41,7 +41,7 @@ export default class Deferred<T> implements PromiseLike<T> {
 
   public success(value?: T): void {
     if (this.res) {
-      this.res(value);
+      this.res(value as T);
     }
   }
 

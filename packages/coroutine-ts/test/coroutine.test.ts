@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import {
   Coroutine,
   CoroutineMultiStartError,
@@ -76,7 +77,7 @@ describe('Coroutine', () => {
       } catch (err) {
         return expect(err).toBeInstanceOf(Error);
       }
-      fail('should throw an Error');
+      expect.fail('should throw an Error');
       return null;
     });
     it('should throw an error when function throws an error asynchronously.', async () => {
@@ -90,7 +91,7 @@ describe('Coroutine', () => {
       } catch (err) {
         return expect(err).toBeInstanceOf(Error);
       }
-      fail('should throw an Error');
+      expect.fail('should throw an Error');
       return null;
     });
   });
@@ -156,7 +157,7 @@ describe('Coroutine', () => {
       } catch (err) {
         return expect(err).toBeInstanceOf(Error);
       }
-      fail('should throw an Error');
+      expect.fail('should throw an Error');
       return null;
     });
   });

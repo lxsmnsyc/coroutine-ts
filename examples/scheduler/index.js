@@ -1,4 +1,4 @@
-const { Coroutine } = require('../../dist');
+import { Coroutine } from 'coroutine-ts';
 
 const current = Date.now();
 
