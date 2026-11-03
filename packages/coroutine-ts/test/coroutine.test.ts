@@ -25,16 +25,10 @@ describe('Coroutine', () => {
         await Coroutine.yield();
       });
 
-      example.start();
+      const pending = example.start();
 
-      try {
-        await example.start();
-      } catch (err) {
-        expect(err).toBeInstanceOf(CoroutineMultiStartError);
-        return;
-      }
-
-      return null;
+      await expect(example.start()).rejects.toBeInstanceOf(CoroutineMultiStartError);
+      await pending;
     });
     it('should throw an error when started after running.', async () => {
       const example = new Coroutine(async () => {
@@ -42,16 +36,10 @@ describe('Coroutine', () => {
       });
 
       await example.start();
-      example.resume();
+      const pending = example.resume();
 
-      try {
-        await example.start();
-      } catch (err) {
-        expect(err).toBeInstanceOf(CoroutineMultiStartError);
-        return;
-      }
-
-      return null;
+      await expect(example.start()).rejects.toBeInstanceOf(CoroutineMultiStartError);
+      await pending;
     });
     it('should throw an error when started after finishing.', async () => {
       const example = new Coroutine(async () => {
@@ -61,28 +49,14 @@ describe('Coroutine', () => {
       await example.start();
       await example.resume();
 
-      try {
-        await example.start();
-      } catch (err) {
-        expect(err).toBeInstanceOf(CoroutineDeadStartError);
-        return;
-      }
-
-      return null;
+      await expect(example.start()).rejects.toBeInstanceOf(CoroutineDeadStartError);
     });
     it('should throw an error when function throws an error synchronously.', async () => {
       const example = new Coroutine(() => {
         throw new Error();
       });
 
-      try {
-        await example.start();
-      } catch (err) {
-        expect(err).toBeInstanceOf(Error);
-        return;
-      }
-      expect.fail('should throw an Error');
-      return null;
+      await expect(example.start()).rejects.toBeInstanceOf(Error);
     });
     it('should throw an error when function throws an error asynchronously.', async () => {
       const example = new Coroutine(async () => {
@@ -90,14 +64,7 @@ describe('Coroutine', () => {
         throw new Error();
       });
 
-      try {
-        await example.start();
-      } catch (err) {
-        expect(err).toBeInstanceOf(Error);
-        return;
-      }
-      expect.fail('should throw an Error');
-      return null;
+      await expect(example.start()).rejects.toBeInstanceOf(Error);
     });
   });
   /**
@@ -109,14 +76,7 @@ describe('Coroutine', () => {
         await Coroutine.yield();
       });
 
-      try {
-        await example.resume();
-      } catch (err) {
-        expect(err).toBeInstanceOf(CoroutineUncalledResumeError);
-        return;
-      }
-
-      return null;
+      await expect(example.resume()).rejects.toBeInstanceOf(CoroutineUncalledResumeError);
     });
     it('should throw an error when resumed multiple times.', async () => {
       const example = new Coroutine(async () => {
@@ -124,16 +84,10 @@ describe('Coroutine', () => {
       });
 
       await example.start();
-      example.resume();
+      const pending = example.resume();
 
-      try {
-        await example.resume();
-      } catch (err) {
-        expect(err).toBeInstanceOf(CoroutineMultiResumeError);
-        return;
-      }
-
-      return null;
+      await expect(example.resume()).rejects.toBeInstanceOf(CoroutineMultiResumeError);
+      await pending;
     });
     it('should throw an error when started after finishing.', async () => {
       const example = new Coroutine(async () => {
@@ -143,14 +97,7 @@ describe('Coroutine', () => {
       await example.start();
       await example.resume();
 
-      try {
-        await example.resume();
-      } catch (err) {
-        expect(err).toBeInstanceOf(CoroutineDeadResumeError);
-        return;
-      }
-
-      return null;
+      await expect(example.resume()).rejects.toBeInstanceOf(CoroutineDeadResumeError);
     });
     it('should throw an error when function throws an error.', async () => {
       const example = new Coroutine(async () => {
@@ -160,14 +107,7 @@ describe('Coroutine', () => {
 
       await example.start();
 
-      try {
-        await example.resume();
-      } catch (err) {
-        expect(err).toBeInstanceOf(Error);
-        return;
-      }
-      expect.fail('should throw an Error');
-      return null;
+      await expect(example.resume()).rejects.toBeInstanceOf(Error);
     });
   });
   /**
@@ -179,14 +119,7 @@ describe('Coroutine', () => {
         await Coroutine.yield();
       });
 
-      try {
-        await example.yield();
-      } catch (err) {
-        expect(err).toBeInstanceOf(CoroutineUncalledYieldError);
-        return;
-      }
-
-      return null;
+      await expect(example.yield()).rejects.toBeInstanceOf(CoroutineUncalledYieldError);
     });
     it('should throw an error when yielded multiple times.', async () => {
       const example = new Coroutine(async () => {
@@ -195,14 +128,7 @@ describe('Coroutine', () => {
 
       await example.start();
 
-      try {
-        await example.yield();
-      } catch (err) {
-        expect(err).toBeInstanceOf(CoroutineMultiYieldError);
-        return;
-      }
-
-      return null;
+      await expect(example.yield()).rejects.toBeInstanceOf(CoroutineMultiYieldError);
     });
     it('should throw an error when yielded after finishing.', async () => {
       const example = new Coroutine(async () => {
@@ -212,14 +138,7 @@ describe('Coroutine', () => {
       await example.start();
       await example.resume();
 
-      try {
-        await example.yield();
-      } catch (err) {
-        expect(err).toBeInstanceOf(CoroutineDeadYieldError);
-        return;
-      }
-
-      return null;
+      await expect(example.yield()).rejects.toBeInstanceOf(CoroutineDeadYieldError);
     });
   });
   /**
@@ -231,12 +150,13 @@ describe('Coroutine', () => {
 
       expect(example.status).toEqual('uncalled');
     });
-    it("should return 'running' for a started Coroutine", () => {
+    it("should return 'running' for a started Coroutine", async () => {
       const example = new Coroutine(async () => Promise.resolve(null));
 
-      example.start();
+      const pending = example.start();
 
       expect(example.status).toEqual('running');
+      await pending;
     });
     it("should return 'suspended' for a yielded Coroutine", async () => {
       const example = new Coroutine(async () => {
@@ -253,9 +173,10 @@ describe('Coroutine', () => {
       });
 
       await example.start();
-      example.resume();
+      const pending = example.resume();
 
       expect(example.status).toEqual('running');
+      await pending;
     });
     it("should return 'dead' for a finished Coroutine", async () => {
       const example = new Coroutine(async () => {

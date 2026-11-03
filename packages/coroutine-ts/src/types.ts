@@ -27,7 +27,5 @@
  */
 export type CoroutineStatus = 'uncalled' | 'suspended' | 'running' | 'dead';
 
-export interface CoroutineResult<T> {
-  done: boolean;
-  value?: T;
-}
+// A finished coroutine gives its return value. A suspended one gives the values it yielded.
+export type CoroutineResult<T> = { done: true; value: T } | { done: false; value: unknown[] };

@@ -25,37 +25,26 @@
  * @author Alexis Munsayac <alexis.munsayac@gmail.com>
  * @copyright Alexis Munsayac 2020
  */
-export default class Deferred<T> implements PromiseLike<T> {
-  private readonly promise: Promise<T>;
+export default class Deferred<T> {
+  public readonly promise: Promise<T>;
 
-  private res?: (value: T | PromiseLike<T>) => void;
-
-  private rej?: (reason?: any) => void;
+  // Method signatures keep T covariant, so a Deferred of a narrower type fits a wider one.
+  private readonly settle: {
+    resolve(value: T): void;
+    reject(reason: unknown): void;
+  };
 
   constructor() {
-    this.promise = new Promise((res, rej) => {
-      this.res = res;
-      this.rej = rej;
-    });
+    const { promise, resolve, reject } = Promise.withResolvers<T>();
+    this.promise = promise;
+    this.settle = { resolve, reject };
   }
 
-  public success(value?: T): void {
-    if (this.res) {
-      this.res(value as T);
-    }
+  public success(value: T): void {
+    this.settle.resolve(value);
   }
 
-  public failure(reason?: any): void {
-    if (this.rej) {
-      this.rej(reason);
-    }
-  }
-
-  // oxlint-disable-next-line typescript/promise-function-async
-  public then<T1 = T, T2 = never>(
-    onfulfilled?: ((value: T) => T1 | PromiseLike<T1>) | null,
-    onrejected?: ((reason: any) => T2 | PromiseLike<T2>) | null,
-  ): Promise<T1 | T2> {
-    return this.promise.then(onfulfilled, onrejected);
+  public failure(reason: unknown): void {
+    this.settle.reject(reason);
   }
 }
