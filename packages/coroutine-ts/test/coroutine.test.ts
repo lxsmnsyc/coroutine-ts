@@ -20,6 +20,17 @@ describe('Coroutine', () => {
    * Start method
    */
   describe('#start', () => {
+    it('should call the function with the coroutine as `this`.', async () => {
+      let bound = false;
+      const example = new Coroutine(async function body(this: unknown) {
+        bound = this === example;
+        await Coroutine.yield();
+      });
+
+      await example.start();
+
+      expect(bound).toBe(true);
+    });
     it('should throw an error when started multiple times.', async () => {
       const example = new Coroutine(async () => {
         await Coroutine.yield();
