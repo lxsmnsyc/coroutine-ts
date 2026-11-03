@@ -1,0 +1,43 @@
+{
+  "name": "coroutine-ts",
+  "version": "0.0.0-stage",
+  "description": "Coroutines in TS and JS",
+  "homepage": "https://github.com/lxsmnsyc/coroutine-ts",
+  "bugs": "https://github.com/lxsmnsyc/coroutine-ts/issues",
+  "license": "MIT",
+  "author": "Alexis Munsayac",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lxsmnsyc/coroutine-ts.git",
+    "directory": "packages/coroutine-ts"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "tsdown": "^0.23.4",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.5"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

@@ -25,8 +25,8 @@
  * @author Alexis Munsayac <alexis.munsayac@gmail.com>
  * @copyright Alexis Munsayac 2020
  */
-export default class CoroutineUncalledResumeError extends Error {
+export default class CoroutineUncalledYieldError extends Error {
   constructor() {
-    super('Attempted to resume a coroutine that hasn\'t been started.');
+    super("Attempted to yield from a coroutine that hasn't been started.");
   }
 }

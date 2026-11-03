@@ -1,5 +1,7 @@
-*.log
-.DS_Store
 node_modules
 dist
 coverage
+*.log
+.DS_Store
+.vercel
+.claude/

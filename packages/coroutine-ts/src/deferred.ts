@@ -25,27 +25,26 @@
  * @author Alexis Munsayac <alexis.munsayac@gmail.com>
  * @copyright Alexis Munsayac 2020
  */
-export interface Value<T> {
-  value: T;
-}
+export default class Deferred<T> {
+  public readonly promise: Promise<T>;
 
-export default class Context<T> {
-  private stack: Value<T>[] = [];
+  // Method signatures keep T covariant, so a Deferred of a narrower type fits a wider one.
+  private readonly settle: {
+    resolve(value: T): void;
+    reject(reason: unknown): void;
+  };
 
-  public push(value: T): void {
-    this.stack.push({
-      value,
-    });
+  constructor() {
+    const { promise, resolve, reject } = Promise.withResolvers<T>();
+    this.promise = promise;
+    this.settle = { resolve, reject };
   }
 
-  public peek(): Value<T> | undefined {
-    if (this.stack.length > 0) {
-      return this.stack[this.stack.length - 1];
-    }
-    return undefined;
+  public success(value: T): void {
+    this.settle.resolve(value);
   }
 
-  public pop(): Value<T> | undefined {
-    return this.stack.pop();
+  public failure(reason: unknown): void {
+    this.settle.reject(reason);
   }
 }

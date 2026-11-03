@@ -25,36 +25,8 @@
  * @author Alexis Munsayac <alexis.munsayac@gmail.com>
  * @copyright Alexis Munsayac 2020
  */
-export default class Deferred<T> implements PromiseLike<T> {
-  private promise: Promise<T>;
-
-  private res?: (value?: T) => void;
-
-  private rej?: (reason?: any) => void;
-
+export default class CoroutineUncalledResumeError extends Error {
   constructor() {
-    this.promise = new Promise((res, rej) => {
-      this.res = res;
-      this.rej = rej;
-    });
-  }
-
-  public success(value?: T): void {
-    if (this.res) {
-      this.res(value);
-    }
-  }
-
-  public failure(reason?: any): void {
-    if (this.rej) {
-      this.rej(reason);
-    }
-  }
-
-  public then<T1 = T, T2 = never>(
-    onfulfilled?: ((value: T) => T1 | PromiseLike<T1>) | undefined | null,
-    onrejected?: ((reason: any) => T2 | PromiseLike<T2>) | undefined | null,
-  ): Promise<T1 | T2> {
-    return this.promise.then(onfulfilled, onrejected);
+    super("Attempted to resume a coroutine that hasn't been started.");
   }
 }

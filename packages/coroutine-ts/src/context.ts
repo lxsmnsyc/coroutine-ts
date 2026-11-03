@@ -25,13 +25,27 @@
  * @author Alexis Munsayac <alexis.munsayac@gmail.com>
  * @copyright Alexis Munsayac 2020
  */
-export type CoroutineStatus =
-  | 'uncalled'
-  | 'suspended'
-  | 'running'
-  | 'dead';
+export interface Value<T> {
+  value: T;
+}
 
-export interface CoroutineResult<T> {
-  done: boolean;
-  value?: T;
+export default class Context<T> {
+  private readonly stack: Value<T>[] = [];
+
+  public push(value: T): void {
+    this.stack.push({
+      value,
+    });
+  }
+
+  public peek(): Value<T> | undefined {
+    if (this.stack.length > 0) {
+      return this.stack[this.stack.length - 1];
+    }
+    return undefined;
+  }
+
+  public pop(): Value<T> | undefined {
+    return this.stack.pop();
+  }
 }

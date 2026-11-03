@@ -25,8 +25,7 @@
  * @author Alexis Munsayac <alexis.munsayac@gmail.com>
  * @copyright Alexis Munsayac 2020
  */
-export default class CoroutineUncalledYieldError extends Error {
-  constructor() {
-    super('Attempted to yield from a coroutine that hasn\'t been started.');
-  }
-}
+export type CoroutineStatus = 'uncalled' | 'suspended' | 'running' | 'dead';
+
+// A finished coroutine gives its return value. A suspended one gives the values it yielded.
+export type CoroutineResult<T> = { done: true; value: T } | { done: false; value: unknown[] };

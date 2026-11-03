@@ -36,10 +36,9 @@ export { default as CoroutineDeadYieldError } from './error/dead-yield';
 export { default as CoroutineUncalledYieldError } from './error/uncalled-yield';
 export { default as CoroutineMultiYieldError } from './error/multi-yield';
 
-export * from './types';
+export type * from './types';
+export type { AnyCoroutine, CoroutineCallback } from './coroutine';
 
-export {
-  Coroutine,
-};
+export { Coroutine };
 
 export default Coroutine;

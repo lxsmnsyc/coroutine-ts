@@ -1,47 +1,28 @@
 {
-  "version": "0.1.0",
-  "license": "MIT",
-  "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
+  "name": "root",
+  "private": true,
+  "type": "module",
   "scripts": {
-    "start": "tsdx watch",
-    "build": "tsdx build",
-    "test": "tsdx test",
-    "lint": "eslint \"src/**/*.ts\"",
-    "prepare": "tsdx build",
-    "coverage": "yarn test --coverage"
+    "build": "pnpm -r --filter=./packages/* build",
+    "test": "pnpm -r --filter=./packages/* test",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "oxlint --type-aware",
+    "lint:fix": "oxlint --type-aware --fix",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
+    "changeset": "changeset",
+    "version": "changeset version"
   },
-  "peerDependencies": {},
-  "name": "coroutine-ts",
-  "author": "Alexis Munsayac",
-  "module": "dist/coroutine-ts.esm.js",
   "devDependencies": {
-    "@types/jest": "^25.1.3",
-    "@typescript-eslint/eslint-plugin": "^2.22.0",
-    "@typescript-eslint/parser": "^2.22.0",
-    "eslint": "^6.8.0",
-    "eslint-config-airbnb-base": "^14.0.0",
-    "eslint-plugin-import": "^2.20.1",
-    "eslint-import-resolver-node": "^0.3.2",
-    "eslint-import-resolver-typescript": "^2.0.0",
-    "tsdx": "^0.12.3",
-    "tslib": "^1.11.1",
-    "typescript": "^3.8.3"
+    "@changesets/cli": "^3.0.3",
+    "@lxsmnsyc/oxlint-config": "^0.1.3",
+    "oxfmt": "^0.75.0",
+    "oxlint": "^1.90.0",
+    "oxlint-tsgolint": "^7.0.2005",
+    "typescript": "^7.0.2"
   },
-  "description": "Coroutines in TS and JS",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/LXSMNSYC/coroutine-ts.git"
+  "engines": {
+    "node": ">=22"
   },
-  "bugs": {
-    "url": "https://github.com/LXSMNSYC/coroutine-ts/issues"
-  },
-  "homepage": "https://github.com/LXSMNSYC/coroutine-ts",
-  "private": false,
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
-  }
+  "packageManager": "pnpm@12.16.1"
 }
