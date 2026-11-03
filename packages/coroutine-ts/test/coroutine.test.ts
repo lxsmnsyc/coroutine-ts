@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, expectTypeOf, it } from 'vitest';
 import {
   Coroutine,
   CoroutineDeadResumeError,
@@ -20,6 +20,23 @@ describe('Coroutine', () => {
    * Start method
    */
   describe('#start', () => {
+    it('should pass values in and out with the types of the function.', async () => {
+      const example = new Coroutine(async function body(x: number) {
+        const [y] = await this.yield(x * 2);
+        return `${x} ${String(y)}`;
+      });
+
+      expectTypeOf<Parameters<typeof example.start>>().toEqualTypeOf<[x: number]>();
+
+      const first = await example.start(1);
+      expect(first).toEqual({ done: false, value: [2] });
+      const last = await example.resume('a');
+      expect(last).toEqual({ done: true, value: '1 a' });
+      if (last.done) {
+        const value: string = last.value;
+        expect(value).toBe('1 a');
+      }
+    });
     it('should call the function with the coroutine as `this`.', async () => {
       let bound = false;
       const example = new Coroutine(async function body(this: unknown) {

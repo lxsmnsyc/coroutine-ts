@@ -6,7 +6,7 @@ type Task = (...args: unknown[]) => Promise<void>;
 
 interface Thread {
   state: 'new' | 'running' | 'suspend' | 'wait' | 'dead';
-  co: Coroutine<void, unknown[], Task>;
+  co: Coroutine<void>;
   arg: unknown[];
   suspendTime?: number;
   resumeTime?: number;

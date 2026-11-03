@@ -37,6 +37,7 @@ export { default as CoroutineUncalledYieldError } from './error/uncalled-yield';
 export { default as CoroutineMultiYieldError } from './error/multi-yield';
 
 export type * from './types';
+export type { AnyCoroutine, CoroutineCallback } from './coroutine';
 
 export { Coroutine };
 

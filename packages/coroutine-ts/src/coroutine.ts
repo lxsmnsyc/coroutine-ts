@@ -39,16 +39,19 @@ import CoroutineNoRunningError from './error/no-running';
 import Context from './context';
 
 // Any coroutine, whatever its result and arguments.
-type AnyCoroutine = Coroutine<unknown, never, (...args: never) => Promise<unknown>>;
+export type AnyCoroutine = Coroutine<unknown, never>;
 
 const STACK = new Context<AnyCoroutine>();
 
-export default class Coroutine<
-  Result,
-  Args extends unknown[],
-  Callback extends (...args: Args) => Promise<Result>,
-> {
-  private readonly callback: Callback;
+// The function a coroutine runs. It gets the coroutine as `this`, typed loosely so that
+// TypeScript can still infer Result and Args from the function.
+export type CoroutineCallback<Result, Args extends unknown[]> = (
+  this: AnyCoroutine,
+  ...args: Args
+) => Promise<Result>;
+
+export default class Coroutine<Result = unknown, Args extends unknown[] = unknown[]> {
+  private readonly callback: CoroutineCallback<Result, Args>;
 
   private cstatus: CoroutineStatus;
 
@@ -56,7 +59,7 @@ export default class Coroutine<
 
   private halting?: Deferred<unknown[]>;
 
-  constructor(callback: Callback) {
+  constructor(callback: CoroutineCallback<Result, Args>) {
     this.callback = callback;
     this.cstatus = 'uncalled';
   }
