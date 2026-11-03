@@ -3,9 +3,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.ts",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "coroutine-ts": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2"
   }
 }

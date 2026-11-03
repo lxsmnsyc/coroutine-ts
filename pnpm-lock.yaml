@@ -190,6 +190,10 @@ importers:
       coroutine-ts:
         specifier: workspace:*
         version: link:../../packages/coroutine-ts
+    devDependencies:
+      typescript:
+        specifier: ^7.0.2
+        version: 7.0.2
 
   packages/coroutine-ts:
     devDependencies:
